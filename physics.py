@@ -26,4 +26,4 @@ def calculate_pressure(depth):
     elif depth == 0:
         return 101325
     else:
-        return depth * 9.81 * 1000
+        return depth * 9.81 * 1000 + 101325
