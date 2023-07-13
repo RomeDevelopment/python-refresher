@@ -1,7 +1,7 @@
 # calculates buoyancy in Newtons given Volume in cubic meters and density in kilograms per meters cubed
 def calculate_buoyancy(V, density_fluid):
-    if V or density_fluid <=0:
-        raise(ValueError)
+    if V or density_fluid <= 0:
+        raise (ValueError)
     else:
         return density_fluid * 9.81 * V
 
@@ -15,13 +15,14 @@ def will_it_float(V, mass):
     elif 1000 * V == mass:
         return None
     elif V or mass <= 0:
-        raise(ValueError)
+        raise (ValueError)
+
 
 # tells you the pressure in pascals at any depth
 def calculate_pressure(depth):
-    if depth<0:
-        raise(ValueError)
-    elif depth=0:
-        return(101325)
+    if depth < 0:
+        raise (ValueError)
+    elif depth == 0:
+        return 101325
     else:
         return depth * 9.81 * 1000
