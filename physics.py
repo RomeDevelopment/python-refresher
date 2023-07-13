@@ -8,17 +8,18 @@ def calculate_buoyancy(V, density_fluid):
 
 # let's you know in simple terms if something will float, returns none if equal
 def will_it_float(V, mass):
-    if 1000 * V > mass:
+    Water_weight = V * 1000
+    if Water_weight > mass:
         return True
-    elif 1000 * V < mass:
+    elif Water_weight < mass:
         return False
-    elif 1000 * V == mass:
+    elif Water_weight == mass:
         return None
-    elif V or mass <= 0:
+    elif (V or mass) <= 0:
         raise (ValueError)
 
 
-# tells you the pressure in pascals at any depth
+# tells you the pressure in pascals at any depth, assuming depth is considered positive
 def calculate_pressure(depth):
     if depth < 0:
         raise (ValueError)

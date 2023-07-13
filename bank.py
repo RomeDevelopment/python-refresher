@@ -5,8 +5,9 @@ class bank:
         self.account_number = account_number
 
     def withdraw(self, w):
-        if w <= balance:
+        if w <= self.balance:
             self.balance = self.balance - w
+            return self.balance
         else:
             return "ERROR"
 
