@@ -72,6 +72,16 @@ def rotation_matrix(theta):
 def calculate_AUV_acceleration(
     F_magnitude, F_angle, mass=100, volume=0.1, thruster_distance=0.5, theta=0
 ):
-    rotation_matrix(theta)
+    ##rotation_matrix(theta)
+    Force_x = F_magnitude * np.cos(F_angle)
+    Force_y = F_magnitude * np.sin(F_angle)
+    Acceleration_x = Force_x / mass
+    Acceleration_y = Force_y / mass
 
+    return [Acceleration_x, Acceleration_y]
+
+
+def calculate_auv_angular_acceleration(
+    F_magnitude, F_angle, Inertia=1, thruster_distance=0.5
+):
     return None

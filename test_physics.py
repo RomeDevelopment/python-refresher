@@ -40,6 +40,11 @@ class TestPhysics(unittest.TestCase):
         )
         self.assertAlmostEqual(physics.calculate_torque(np.pi, 2000, 2000), 0)
 
+    def test_AUV_acceleration_calculator(self):
+        self.assertAlmostEqual(
+            physics.calculate_auv_angular_acceleration(100, np.pi), [-100, 0]
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
