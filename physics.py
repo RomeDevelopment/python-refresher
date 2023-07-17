@@ -63,7 +63,7 @@ def calculate_moment_of_inertia(m, r):
 
 
 def rotation_matrix(theta):
-    rotation_matrix = np.ndarray(
+    rotation_matrix = np.array(
         [[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]]
     )
     return rotation_matrix
@@ -81,44 +81,63 @@ def calculate_AUV_acceleration(
     return [Acceleration_x, Acceleration_y]
 
 
+# takes Magnitude in Newtons and angle in radians
+#
+
+
 def calculate_AUV_angular_acceleration(
     F_magnitude, F_angle, inertia=1, thruster_distance=0.5
 ):
-    if inertia>0:
-        return(F_magnitude*np.sin(F_angle)*thruster_distance)
+    if inertia > 0:
+        return F_magnitude * np.sin(F_angle) * thruster_distance
     else:
-        return(ValueError)
-
-T=np.ndarray([T_i=0,T_i2=0,T_i3=0,T_i4=0])
-
-def calculate_AUV2_acceleration(T,alpha,theta,mass=100):
-    if type(T)!= np.ndarray:
-        return(ValueError)
-    elif mass<0:
-        return(ValueError)
-    F_x=0
-    F_y=0
-    Force=[F_x,F_y]
-    R=rotation_matrix(theta)
-    Force=R*np.ndarray([[np.cos(alpha),np.cos(alpha),-np.cos(alpha),-np.cos(alpha)],[np.sin(alpha),-np.sin(alpha),-np.sin(alpha),np.sin(alpha)]])*T
-    return(Force/mass)
+        return ValueError
 
 
-#T is an np.ndarray, alpha is defined in radians with
+# Calculates acceleration in m/s^2 taking a (1,4) shape Array, T
+# and alpha and theta in radians.
+# Mass has a default value of 100 kg, but other inputs can be used in kilograms also
+
+
+def calculate_AUV2_acceleration(T, alpha, theta, mass=100):
+    if type(T) != np.ndarray:
+        return ValueError
+    if np.shape(T) != (1, 4):
+        return ValueError
+
+    elif mass < 0:
+        return ValueError
+
+    # For future integration techniques, an initalization
+
+    F_x = 0
+    F_y = 0
+    Force = [F_x, F_y]
+
+    R = rotation_matrix(theta)
+    Force = (
+        R
+        * np.ndarray(
+            [
+                [np.cos(alpha), np.cos(alpha), -np.cos(alpha), -np.cos(alpha)],
+                [np.sin(alpha), -np.sin(alpha), -np.sin(alpha), np.sin(alpha)],
+            ]
+        )
+        * T
+    )
+    return Force / mass
+
+
+# T is an np.ndarray, alpha is defined in radians with
 # T_0 being the bottom right thruster, T_1 being top right, T_2 being top left, T_3 bottom left
 # little l is horizontal, big L is vertical, inertia is defined in kg*m^2
-def calculate_AUV2_angular_acceleration(T,alpha,l,L,inertia):
-    if type(T)!= np.ndarray:
-        return(ValueError)
-    elif inertia<0:
-        return(ValueError)
-    
-    r=np.sqrt(l**2+L**2)
-    beta=np.arctan(L/l)
-    new_force=T[0]+-T[1]+T[2]-T[3]
+def calculate_AUV2_angular_acceleration(T, alpha, l, L, inertia):
+    if type(T) != np.ndarray:
+        return ValueError
+    elif inertia <= 0:
+        return ValueError
 
-    return(np.sin(alpha+beta)*r*new_force/inertia)
-
-
-
-
+    r = np.sqrt(l**2 + L**2)
+    beta = np.arctan(L / l)
+    new_force = T[0] + -T[1] + T[2] - T[3]
+    return np.sin(alpha + beta) * r * new_force / inertia
