@@ -4,10 +4,11 @@ import numpy as np
 
 
 class TestPhysics(unittest.TestCase):
+
     def test_buoyancy_calculator(self):
         self.assertEqual(physics.calculate_buoyancy(100, 100), 98100)
-        self.assertEqual(physics.calculate_buoyancy(1 / 9.81, 100), 100)
-        self.assertNotEqual(physics.calculate_buoyancy(1 / 9.81, 100), 101)
+        self.assertAlmostEqual(physics.calculate_buoyancy(.1019367, 100), 100)
+        self.assertNotEqual(physics.calculate_buoyancy(9.81, 100), 101)
 
     def test_float_calculator(self):
         self.assertEqual(physics.will_it_float(1, 1000), None)
@@ -41,9 +42,35 @@ class TestPhysics(unittest.TestCase):
         self.assertAlmostEqual(physics.calculate_torque(np.pi, 2000, 2000), 0)
 
     def test_AUV_acceleration_calculator(self):
-        self.assertAlmostEqual(
-            physics.calculate_auv_angular_acceleration(100, np.pi), [-100, 0]
+        self.assertTrue(
+            np.allclose(
+            physics.calculate_AUV_acceleration(100, np.pi), [-1, 0]))
+        self.assertFalse(
+            np.allclose(
+            physics.calculate_AUV_acceleration(200,2*np.pi),[2,0]
+            )
         )
+
+
+
+    def test_AUV_angular_acceleration(self):
+        self.assertAlmostEqual(physics.calculate_AUV_angular_acceleration())
+
+    def test_AUV2_acceleration(self):
+        self.assertEqual
+
+    def test_AUV2_angular_acceleration(self):
+
+
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == "__main__":

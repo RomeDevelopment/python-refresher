@@ -51,7 +51,7 @@ def calculate_angular_acceleration(tau, I):
 # Finds torque given Force in Newtons and radius in Meters
 def calculate_torque(F_direction, F_magnitude, r):
     F_magnitude = abs(F_magnitude)
-    F_direction = F_direction % 360
+    F_direction = F_direction % (2 * np.pi)
     if r > 0:
         return F_magnitude * np.sin(F_direction) * r
     else:
@@ -63,7 +63,7 @@ def calculate_moment_of_inertia(m, r):
 
 
 def rotation_matrix(theta):
-    rotation_matrix = np.array(
+    rotation_matrix = np.ndarray(
         [[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]]
     )
     return rotation_matrix
@@ -81,7 +81,44 @@ def calculate_AUV_acceleration(
     return [Acceleration_x, Acceleration_y]
 
 
-def calculate_auv_angular_acceleration(
-    F_magnitude, F_angle, Inertia=1, thruster_distance=0.5
+def calculate_AUV_angular_acceleration(
+    F_magnitude, F_angle, inertia=1, thruster_distance=0.5
 ):
-    return None
+    if inertia>0:
+        return(F_magnitude*np.sin(F_angle)*thruster_distance)
+    else:
+        return(ValueError)
+
+T=np.ndarray([T_i=0,T_i2=0,T_i3=0,T_i4=0])
+
+def calculate_AUV2_acceleration(T,alpha,theta,mass=100):
+    if type(T)!= np.ndarray:
+        return(ValueError)
+    elif mass<0:
+        return(ValueError)
+    F_x=0
+    F_y=0
+    Force=[F_x,F_y]
+    R=rotation_matrix(theta)
+    Force=R*np.ndarray([[np.cos(alpha),np.cos(alpha),-np.cos(alpha),-np.cos(alpha)],[np.sin(alpha),-np.sin(alpha),-np.sin(alpha),np.sin(alpha)]])*T
+    return(Force/mass)
+
+
+#T is an np.ndarray, alpha is defined in radians with
+# T_0 being the bottom right thruster, T_1 being top right, T_2 being top left, T_3 bottom left
+# little l is horizontal, big L is vertical, inertia is defined in kg*m^2
+def calculate_AUV2_angular_acceleration(T,alpha,l,L,inertia):
+    if type(T)!= np.ndarray:
+        return(ValueError)
+    elif inertia<0:
+        return(ValueError)
+    
+    r=np.sqrt(l**2+L**2)
+    beta=np.arctan(L/l)
+    new_force=T[0]+-T[1]+T[2]-T[3]
+
+    return(np.sin(alpha+beta)*r*new_force/inertia)
+
+
+
+
