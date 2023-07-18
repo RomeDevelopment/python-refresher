@@ -147,10 +147,12 @@ def calculate_auv2_angular_acceleration(T, alpha, l, L, inertia):
 
 
 def simulate_auv2_motion(
-    T, alpha, L, l, inertia, dt, t_final, x0, y0, theta0, mass=100
+    T, alpha, L, l, mass=100, inertia=100, dt=0.1, t_final=10, x0=0, y0=0, theta0=0
 ):
     angular_acceleration = calculate_auv2_angular_acceleration(T, alpha, l, L, inertia)
+
     theta_i = theta0
+
     axial_acceleration = calculate_auv2_acceleration(T, alpha, theta_i, mass)
     ## Now we have the accelerations for those two degrees of freedom, so we need to integrate to get velocity,
     ## and then at that point we can find total shift for those degrees.
@@ -163,97 +165,39 @@ def simulate_auv2_motion(
     # DT CANNOT BE 0, MAKE SURE EVERYTHING IS INITIALIZED
 
     t = np.arange(0, t_final, dt)
+
     x = np.zeros_like(t)
     y = np.zeros_like(t)
+
     theta = np.zeros_like(t)
+
     omega = np.zeros_like(t)
     v_x = np.zeros_like(t)
     v_y = np.zeros_like(t)
-    a = np.zeros_like(t)
-    omega[0] = 0
+
     a_x = np.zeros_like(t)
     a_y = np.zeros_like(t)
     a_angular = np.zeros_like(t)
 
-    theta[0] = theta0
-
-    for i in range(1, len(t)):
-        a_x[i] = calculate_auv2_acceleration(T, alpha, theta[i - 1])[0]
-        a_y[i] = calculate_auv2_acceleration(T, alpha, theta[i - 1])[1]
-        a_angular[i] = calculate_auv2_angular_acceleration(T, alpha, l, L, inertia)
-        v_x[i] = v_x[i - 1] + a_x[i - 1]
-        v_y[i] = v_y[i - 1] + a_y[i - 1]
-        omega[i] = omega[i - 1] + a_angular[i - 1] * dt
-        theta[i] = theta[i - 1] + omega[i - 1] * dt
-        x[i] = x[i - 1] + v_x[i] * dt
-        y[i] = y[i - 1] + v_y[i] * dt
-
-    a = np.array(zip(a_x, a_y, a_angular))
-    v = np.array(zip(v_x, v_y))
-    return [t, x, y, theta, v, omega, a]
-
-
-def plot_auv2_motion(t, x, y, theta, v, omega, a):
-    plt.plot(t, x, label="X position")
-    plt.plot(t, y, label="Y posiiton")
-    plt.plot(t, theta, label="Theta value")
-    plt.plot(t, omega, label="Angular Velocity")
-    ##Can I just make the "i" indicator empty and then it runs through everything??
-
-    for i in range(1, len(v)):
-        plt.plot(t, v[i][0], label="X velocity")
-        plt.plot(t, v[i][1], label="Y velocity")
-
-    for i in range(1, len(a)):
-        plt.plot(t, a[i][0], label="X acceleration")
-        plt.plot(t, a[i][1], label="Y acceleration")
-        plt.plot(t, a[i][2], label="angular acceleration")
-
-
-def simulate_auv2_motion(
-    T, alpha, L, l, inertia, dt, t_final, x0=0, y0=0, theta0=0, mass=100
-):
-    angular_acceleration = calculate_auv2_angular_acceleration(T, alpha, l, L, inertia)
-    theta_i = theta0
-    axial_acceleration = calculate_auv2_acceleration(T, alpha, theta_i, mass)
-    ## Now we have the accelerations for those two degrees of freedom, so we need to integrate to get velocity,
-    ## and then at that point we can find total shift for those degrees.
-
-    ## These variables are arrays in the same shape as the number of time steps between t_0 and t_final.
-    ## For each time_step(dt) we will have a value for each of these variables that reflects the
-    ## position, acceleration,omega,velocity, etc. at that point.
-
-    ##THINGS TO ADD LATER:
-    # DT CANNOT BE 0, MAKE SURE EVERYTHING IS INITIALIZED
-
-    t = np.arange(0, t_final, dt)
-    x = np.zeros_like(t)
-    y = np.zeros_like(t)
-    theta = np.zeros_like(t)
-    omega = np.zeros_like(t)
-    v_x = np.zeros_like(t)
-    v_y = np.zeros_like(t)
-    a = np.zeros_like(t)
     omega[0] = 0
-    a_x = np.zeros_like(t)
-    a_y = np.zeros_like(t)
-    a_angular = np.zeros_like(t)
-
     theta[0] = theta0
 
     for i in range(1, len(t)):
-        a_x[i] = calculate_auv2_acceleration(T, alpha, theta[i - 1])[0]
-        a_y[i] = calculate_auv2_acceleration(T, alpha, theta[i - 1])[1]
+        a_x[i] = calculate_auv2_acceleration(T, alpha, theta[i])[0]
+        a_y[i] = calculate_auv2_acceleration(T, alpha, theta[i])[1]
         a_angular[i] = calculate_auv2_angular_acceleration(T, alpha, l, L, inertia)
-        v_x[i] = v_x[i - 1] + a_x[i - 1]
-        v_y[i] = v_y[i - 1] + a_y[i - 1]
-        omega[i] = omega[i - 1] + a_angular[i - 1] * dt
-        theta[i] = theta[i - 1] + omega[i - 1] * dt
+
+        v_x[i] = v_x[i - 1] + a_x[i]
+        v_y[i] = v_y[i - 1] + a_y[i]
+        omega[i] = omega[i - 1] + a_angular[i] * dt
+
+        theta[i] = theta[i - 1] + omega[i] * dt
         x[i] = x[i - 1] + v_x[i] * dt
         y[i] = y[i - 1] + v_y[i] * dt
 
     a = np.vstack((a_x, a_y, a_angular))
     v = np.vstack((v_x, v_y))
+
     return [t, x, y, theta, v, omega, a]
 
 
