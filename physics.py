@@ -217,3 +217,10 @@ def plot_auv2_motion(t, x, y, theta, v, omega, a):
     plt.legend()
 
     plt.show()
+
+
+def subplotter(t, x, y, theta, v, omega, a):
+    fig, (ax1, ax2, ax3) = plt.subplots(3)
+    ax1.plot(x, y)
+    ax2.plot(t, y)
+    ax3.plot(t, x)
